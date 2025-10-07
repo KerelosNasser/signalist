@@ -1,11 +1,11 @@
-import React from 'react'
+
 import Header from "@/components/header";
 
-const Layout = ({children}: { children: React.ReactNode }) => {
-    return (
-        <main className="min-h-screen text-gray-500">
+const Layout = async ({ children }: { children : React.ReactNode }) => {
 
-            <Header/>
+    return (
+        <main className="min-h-screen text-gray-400">
+            <Header />
 
             <div className="container py-10">
                 {children}
