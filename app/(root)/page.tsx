@@ -2,7 +2,7 @@ import React from 'react'
 
 const homePage = () => {
     return (
-        <div className="flex justify-center items-center h-screen">
+        <div className="min-h-screen home-wrapper">
 
         </div>
     )
