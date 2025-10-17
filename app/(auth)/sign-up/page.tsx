@@ -1,19 +1,23 @@
-'use client'
-import React from 'react'
-import {Button} from "@/components/ui/button";
+'use client';
+
 import {useForm} from "react-hook-form";
+import {Button} from "@/components/ui/button";
+import {useRouter} from "next/navigation";
+import {toast} from "sonner";
 import InputField from "@/components/Forms/inputField";
-import SelectField from "@/components/Forms/selectField";
-import {INVESTMENT_GOALS, PREFERRED_INDUSTRIES, RISK_TOLERANCE_OPTIONS} from "@/lib/constants";
+import {signUpWithEmail} from "@/lib/actions/auth.actions";
 import {CountrySelectField} from "@/components/Forms/countrySelectField";
+import {INVESTMENT_GOALS, PREFERRED_INDUSTRIES, RISK_TOLERANCE_OPTIONS} from "@/lib/constants";
+import SelectField from "@/components/Forms/selectField";
 import FooterLink from "@/components/Forms/footerLink";
 
-const signUp = () => {
+const SignUp = () => {
+    const router = useRouter()
     const {
         register,
         handleSubmit,
         control,
-        formState: {errors, isSubmitting},
+        formState: { errors, isSubmitting },
     } = useForm<SignUpFormData>({
         defaultValues: {
             fullName: '',
@@ -22,99 +26,101 @@ const signUp = () => {
             country: 'US',
             investmentGoals: 'Growth',
             riskTolerance: 'Medium',
-            preferredIndustry: 'Technology',
+            preferredIndustry: 'Technology'
         },
-        mode: 'inBlur'
-    })
+        mode: 'onBlur'
+    }, );
 
     const onSubmit = async (data: SignUpFormData) => {
         try {
-
+            const result = await signUpWithEmail(data);
+            if(result.success) router.push('/');
         } catch (e) {
-            console.log(e);
+            console.error(e);
+            toast.error('Sign up failed', {
+                description: e instanceof Error ? e.message : 'Failed to create an account.'
+            })
         }
     }
 
     return (
         <>
-            <h1 className='form-title'>Sign Up & Personalize</h1>
-            <form onSubmit={handleSubmit(onSubmit)} className='space-y-4'>
-                {/*inputs*/}
+            <h1 className="form-title">Sign Up & Personalize</h1>
+
+            <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
                 <InputField
-                    name='FullName'
-                    label='Full Name'
-                    placeholder='Enter your full name'
+                    name="fullName"
+                    label="Full Name"
+                    placeholder="John Doe"
                     register={register}
                     error={errors.fullName}
-                    validation={true}
+                    validation={{ required: 'Full name is required', minLength: 2 }}
                 />
+
                 <InputField
-                    name='Email'
-                    label='Email'
-                    placeholder='Enter your email'
+                    name="email"
+                    label="Email"
+                    placeholder="contact@jsmastery.com"
                     register={register}
                     error={errors.email}
-                    validation={true}
+                    validation={{ required: 'Email name is required', pattern: /^\w+@\w+\.\w+$/, message: 'Email address is required' }}
                 />
+
                 <InputField
-                    name='Password'
-                    label='Password'
-                    placeholder='Enter your Password'
+                    name="password"
+                    label="Password"
+                    placeholder="Enter a strong password"
+                    type="password"
                     register={register}
                     error={errors.password}
-                    validation={true}
+                    validation={{ required: 'Password is required', minLength: 8 }}
                 />
-
-                {/*country*/}
 
                 <CountrySelectField
-                    name='Country'
-                    label='country'
+                    name="country"
+                    label="Country"
                     control={control}
+                    error={errors.country}
+                    required
                 />
-                {/*Select Fields*/}
 
                 <SelectField
-                    name='Investment Goal'
-                    label='Investment Goal'
-                    placeholder='Select your Investment goal'
+                    name="investmentGoals"
+                    label="Investment Goals"
+                    placeholder="Select your investment goal"
                     options={INVESTMENT_GOALS}
                     control={control}
                     error={errors.investmentGoals}
+                    required
                 />
+
                 <SelectField
-                    name='Risk Tolerance'
-                    label='Risk Tolerance'
-                    placeholder='Select your Risk Tolerance'
+                    name="riskTolerance"
+                    label="Risk Tolerance"
+                    placeholder="Select your risk level"
                     options={RISK_TOLERANCE_OPTIONS}
                     control={control}
                     error={errors.riskTolerance}
+                    required
                 />
+
                 <SelectField
-                    name="Prefered Industry"
-                    label='Prefered Industry'
-                    placeholder='Select your Prefered Industry'
+                    name="preferredIndustry"
+                    label="Preferred Industry"
+                    placeholder="Select your preferred industry"
                     options={PREFERRED_INDUSTRIES}
                     control={control}
                     error={errors.preferredIndustry}
+                    required
                 />
 
-                {/*submit Button*/}
-
-                <Button type='submit' disabled={isSubmitting} className='yellow-btn w-full mt-5'>
-                    {isSubmitting ? 'Signing Up...' : 'Start Your Investment Journey'}
+                <Button type="submit" disabled={isSubmitting} className="yellow-btn w-full mt-5">
+                    {isSubmitting ? 'Creating Account' : 'Start Your Investing Journey'}
                 </Button>
 
-                {/*footer*/}
-
-                <FooterLink
-                    text='already have an account ?'
-                    linkText='Sign In'
-                    href='/sign-in'
-                />
-
+                <FooterLink text="Already have an account?" linkText="Sign in" href="/sign-in" />
             </form>
         </>
     )
 }
-export default signUp
+export default SignUp;
