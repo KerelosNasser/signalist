@@ -9,16 +9,22 @@ export const signUpWithEmail = async ({ email, password, fullName, country, inve
         const response = await auth.api.signUpEmail({ body: { email, password, name: fullName } })
 
         if(response) {
-            await inngest.send({
-                name: 'app/user.created',
-                data: { email, name: fullName, country, investmentGoals, riskTolerance, preferredIndustry }
-            })
+            try {
+                await inngest.send({
+                    name: 'app/user.created',
+                    data: { email, name: fullName, country, investmentGoals, riskTolerance, preferredIndustry }
+                })
+            } catch (inngestError) {
+                console.error('INNGEST ERROR (Sign-up event):', inngestError);
+                // We don't throw here to avoid failing sign-up if just the event sending fails
+            }
         }
 
         return { success: true, data: response }
-    } catch (e) {
-        console.log('Sign up failed', e)
-        return { success: false, error: 'Sign up failed' }
+    } catch (e: any) {
+        console.error('SIGN-UP ERROR:', e);
+        const errorMessage = e?.message || e?.error?.message || 'Sign up failed';
+        return { success: false, error: errorMessage }
     }
 }
 
@@ -27,9 +33,10 @@ export const signInWithEmail = async ({ email, password }: SignInFormData) => {
         const response = await auth.api.signInEmail({ body: { email, password } })
 
         return { success: true, data: response }
-    } catch (e) {
-        console.log('Sign in failed', e)
-        return { success: false, error: 'Sign in failed' }
+    } catch (e: any) {
+        console.error('SIGN-IN ERROR:', e);
+        const errorMessage = e?.message || e?.error?.message || 'Sign in failed';
+        return { success: false, error: errorMessage }
     }
 }
 
