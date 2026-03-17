@@ -23,6 +23,7 @@ const WatchlistButton = ({
 
   const handleClick = () => {
     const next = !added;
+    console.log(`WATCHLIST: Toggling ${symbol} - New State: ${next ? 'Added' : 'Removed'}`);
     setAdded(next);
     onWatchlistChange?.(symbol, next);
     

@@ -37,19 +37,20 @@ export const connectToDatabase = async () => {
   }
 
   if (cached.conn) {
+    console.log("CACHE HIT: Using existing MongoDB connection");
     return cached.conn;
   }
 
   if (!cached.promise) {
-    console.log("Attempting to connect to MongoDB...");
+    console.log(`CONNECTING: Attempting to connect to MongoDB... (Target: ${MONGODB_URI.split('@').pop()?.split('/')[0]})`);
     const opts = {
       bufferCommands: false,
-      serverSelectionTimeoutMS: 15000, // Increased timeout
+      serverSelectionTimeoutMS: 15000, 
       family: 4, 
     };
 
     cached.promise = mongoose.connect(MONGODB_URI, opts).then((m) => {
-      console.log(`Successfully connected to MongoDB: ${m.connection.name}`);
+      console.log(`SUCCESS: Connected to MongoDB [db="${m.connection.name}", host="${m.connection.host}"]`);
       return m;
     });
   }
@@ -58,7 +59,7 @@ export const connectToDatabase = async () => {
     cached.conn = await cached.promise;
   } catch (err: any) {
     cached.promise = null;
-    console.error("MongoDB connection error:", err);
+    console.error("FAILED: MongoDB connection error:", err);
     if (err.message && err.message.includes("ECONNREFUSED")) {
       console.error(
         "HINT: This error often occurs when DNS SRV limits block the connection. " +

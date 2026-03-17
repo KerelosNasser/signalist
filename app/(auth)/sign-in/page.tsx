@@ -24,8 +24,10 @@ const SignIn = () => {
     });
 
     const onSubmit = async (data: SignInFormData) => {
+        console.log('SIGN-IN: Submitting form...', { email: data.email });
         try {
             const result = await signInWithEmail(data);
+            console.log('SIGN-IN RESPONSE:', result);
             if(result.success) {
                 toast.success('Sign in successful', {
                     description: 'Welcome back to Signalist!'
@@ -37,7 +39,7 @@ const SignIn = () => {
                 });
             }
         } catch (e) {
-            console.error(e);
+            console.error('SIGN-IN EXCEPTION:', e);
             toast.error('Sign in failed', {
                 description: 'An unexpected error occurred. Please try again later.'
             })

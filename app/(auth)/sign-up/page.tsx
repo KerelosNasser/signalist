@@ -32,8 +32,10 @@ const SignUp = () => {
     }, );
 
     const onSubmit = async (data: SignUpFormData) => {
+        console.log('SIGN-UP: Submitting form...', { email: data.email, name: data.fullName });
         try {
             const result = await signUpWithEmail(data);
+            console.log('SIGN-UP RESPONSE:', result);
             if(result.success) {
                 toast.success('Account created!', {
                     description: 'Welcome to Signalist. Let\'s get started!'
@@ -45,7 +47,7 @@ const SignUp = () => {
                 });
             }
         } catch (e) {
-            console.error(e);
+            console.error('SIGN-UP EXCEPTION:', e);
             toast.error('Sign up failed', {
                 description: 'An unexpected error occurred. Please try again later.'
             })

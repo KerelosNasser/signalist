@@ -26,7 +26,9 @@ const UserDropdown = ({
   const router = useRouter();
 
   const handleSignOut = async () => {
+    console.log("SIGN-OUT: Initiating sign-out...");
     await signOut();
+    console.log("SIGN-OUT: Successful.");
     toast.success("Signed out successfully");
     router.push("/sign-in");
   };
