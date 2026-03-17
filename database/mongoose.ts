@@ -23,26 +23,29 @@ if (!cached) {
 }
 
 export const connectToDatabase = async () => {
+  // Force DNS servers again right before connection to ensure they are active in the current context
+  try {
+    dns.setServers(["8.8.8.8", "1.1.1.1"]);
+    console.log("DNS servers set to 8.8.8.8, 1.1.1.1");
+  } catch (e) {
+    console.warn("Failed to set DNS servers:", e);
+  }
+
   if (!MONGODB_URI) {
-    console.error(
-      "CRITICAL: MONGODB_URI is not defined in environment variables.",
-    );
+    console.error("CRITICAL: MONGODB_URI is not defined in environment variables.");
     throw new Error("MONGODB_URI must be set within .env");
   }
 
   if (cached.conn) {
-    console.log("Using existing MongoDB connection");
     return cached.conn;
   }
 
   if (!cached.promise) {
     console.log("Attempting to connect to MongoDB...");
-    // If the error is querySrv ECONNREFUSED, it's often a DNS issue.
-    // We can add a timeout or check the URI format.
     const opts = {
       bufferCommands: false,
-      serverSelectionTimeoutMS: 10000, // 10s timeout
-      family: 4, // Force IPv4 to avoid some DNS issues
+      serverSelectionTimeoutMS: 15000, // Increased timeout
+      family: 4, 
     };
 
     cached.promise = mongoose.connect(MONGODB_URI, opts).then((m) => {
@@ -58,7 +61,8 @@ export const connectToDatabase = async () => {
     console.error("MongoDB connection error:", err);
     if (err.message && err.message.includes("ECONNREFUSED")) {
       console.error(
-        "HINT: This error often occurs when DNS SRV limits or network firewalls block the connection to MongoDB Atlas.",
+        "HINT: This error often occurs when DNS SRV limits block the connection. " +
+        "Try using the 'Standard Connection String' (without +srv) from MongoDB Atlas if this persists."
       );
     }
     throw err;
