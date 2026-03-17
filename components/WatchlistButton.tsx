@@ -1,5 +1,6 @@
 "use client";
 import React, { useMemo, useState } from "react";
+import { toast } from "sonner";
 
 // Minimal WatchlistButton implementation to satisfy page requirements.
 // This component focuses on UI contract only. It toggles local state and
@@ -24,6 +25,12 @@ const WatchlistButton = ({
     const next = !added;
     setAdded(next);
     onWatchlistChange?.(symbol, next);
+    
+    if (next) {
+      toast.success(`${symbol} added to watchlist`);
+    } else {
+      toast.info(`${symbol} removed from watchlist`);
+    }
   };
 
   if (type === "icon") {

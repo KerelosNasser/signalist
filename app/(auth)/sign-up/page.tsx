@@ -34,11 +34,20 @@ const SignUp = () => {
     const onSubmit = async (data: SignUpFormData) => {
         try {
             const result = await signUpWithEmail(data);
-            if(result.success) router.push('/');
+            if(result.success) {
+                toast.success('Account created!', {
+                    description: 'Welcome to Signalist. Let\'s get started!'
+                });
+                router.push('/');
+            } else {
+                toast.error('Sign up failed', {
+                    description: result.error || 'Failed to create an account.'
+                });
+            }
         } catch (e) {
             console.error(e);
             toast.error('Sign up failed', {
-                description: e instanceof Error ? e.message : 'Failed to create an account.'
+                description: 'An unexpected error occurred. Please try again later.'
             })
         }
     }
