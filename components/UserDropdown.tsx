@@ -41,7 +41,7 @@ const UserDropdown = ({
           className="flex items-center gap-3 text-gray-4 hover:text-yellow-500"
         >
           <Avatar className="h-8 w-8">
-            <AvatarImage src="https://avatars.githubusercontent.com/u/153423955?s=280&v=4" />
+            <AvatarImage src="https://picsum.photos/id/237/536/354" />
             <AvatarFallback className="bg-yellow-500 text-yellow-900 text-sm font-bold">
               {user.name[0]}
             </AvatarFallback>
